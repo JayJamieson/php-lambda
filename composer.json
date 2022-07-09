@@ -1,0 +1,12 @@
+{
+    "require": {
+        "bref/bref": "1.6.0",
+        "bref/symfony-bridge": "^0.2.0",
+        "bref/logger": "^1.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "symfony/runtime": true
+        }
+    }
+}
