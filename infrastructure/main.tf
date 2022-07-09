@@ -32,27 +32,9 @@ resource "aws_lambda_function" "php_lambda" {
   ]
 }
 
-resource "aws_s3_bucket_notification" "bucket_notification" {
-  bucket = aws_s3_bucket.bucket.id
-
-  lambda_function {
-    lambda_function_arn = aws_lambda_function.php_lambda.arn
-    events              = ["s3:ObjectCreated:*"]
-    filter_prefix       = "emails/"
-  }
-}
-
 resource "aws_iam_role" "lambda_iam_role" {
   name               = "lambda-execution-role"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role_policy.json
-}
-
-resource "aws_lambda_permission" "allow_bucket" {
-  statement_id  = "AllowExecutionFromS3Bucket"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.php_lambda.arn
-  principal     = "s3.amazonaws.com"
-  source_arn    = aws_s3_bucket.bucket.arn
 }
 
 data "aws_iam_policy_document" "lambda_assume_role_policy" {

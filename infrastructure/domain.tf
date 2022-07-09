@@ -3,7 +3,7 @@ data "aws_route53_zone" "jaythedeveloper_zone" {
 }
 
 resource "aws_acm_certificate" "certificate" {
-  domain_name       = "php-lambda.jaythedeveloper.tech"
+  domain_name       = "phplambda-view.jaythedeveloper.tech"
   validation_method = "DNS"
 }
 
@@ -21,7 +21,7 @@ resource "aws_acm_certificate_validation" "certificate_validation" {
 }
 
 resource "aws_api_gateway_domain_name" "domain_name" {
-  domain_name              = "php-lambda.jaythedeveloper.tech"
+  domain_name              = "phplambda-view.jaythedeveloper.tech"
   regional_certificate_arn = aws_acm_certificate_validation.certificate_validation.certificate_arn
 
   endpoint_configuration {
@@ -38,7 +38,7 @@ resource "aws_api_gateway_base_path_mapping" "path_mapping" {
 }
 
 resource "aws_route53_record" "sub_domain" {
-  name    = "php-lambda.jaythedeveloper.tech"
+  name    = "phplambda-view.jaythedeveloper.tech"
   type    = "A"
   zone_id = data.aws_route53_zone.jaythedeveloper_zone.zone_id
 

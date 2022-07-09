@@ -25,7 +25,7 @@ $name = $_GET['name'];
     <div class="flex container mx-auto justify-center">
         <div class="justify-center">
             <h1 class="text-3xl">Welcome to PHP in lambda</h1>
-            <p>This page was rendered using plain php</p>
+            <p>This page was rendered using plain php on a lambda handler</p>
             <p>Try <a class="font-medium underline" href="/?name=Jay">requesting</a> this page with a <code>name</code> query parameter</p>
             <p>Hello <?= empty($name) ? "World" : $name ?></p>
         </div>
