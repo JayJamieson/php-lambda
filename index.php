@@ -4,28 +4,32 @@ declare(strict_types=1);
 
 require __DIR__ . '/vendor/autoload.php';
 
-use Bref\Context\Context;
-use Bref\Event\S3\S3Event;
-use Bref\Event\S3\S3Handler;
-use Psr\Log\LoggerInterface;
-use Psr\Log\LogLevel;
+// This is a PHP file example.
+// Replace it with your application.
 
-class Handler extends S3Handler
-{
-    public LoggerInterface $log;
+$name = $_GET['name'];
+// Below is a welcome page written in HTML.
+?>
 
-    public function __construct()
-    {
-        $this->log = new \Bref\Logger\StderrLogger(LogLevel::INFO);
-    }
+<!DOCTYPE html>
+<html lang="en">
 
-    public function handleS3(S3Event $event, Context $context): void
-    {
-        $bucketName = $event->getRecords()[0]->getBucket()->getName();
-        $fileName = $event->getRecords()[0]->getObject()->getKey();
-        $this->log->info($bucketName);
-        $this->log->warning($fileName);
-    }
-}
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Welcome to Serverless PHP</title>
+    <link href="https://fonts.googleapis.com/css?family=Dosis:300&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
 
-return new Handler();
+<body>
+    <div class="flex container mx-auto justify-center">
+        <div class="justify-center">
+            <h1 class="text-3xl">Welcome to PHP in lambda</h1>
+            <p>This page was rendered using plain php</p>
+            <p>Try <a class="font-medium underline" href="/?name=Jay">requesting</a> this page with a <code>name</code> query parameter</p>
+            <p>Hello <?= empty($name) ? "World" : $name ?></p>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -26,7 +26,7 @@ resource "aws_lambda_function" "php_lambda" {
   runtime          = "provided.al2"
   timeout          = 900
   memory_size      = 512
-  layers           = ["arn:aws:lambda:ap-southeast-2:209497400698:layer:php-74:48"]
+  layers           = ["arn:aws:lambda:ap-southeast-2:209497400698:layer:php-74-fpm:48"]
   depends_on = [
     aws_iam_role_policy_attachment.lambda_policy_attachment
   ]
