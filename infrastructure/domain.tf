@@ -20,17 +20,6 @@ resource "aws_acm_certificate_validation" "certificate_validation" {
   validation_record_fqdns = [aws_route53_record.certificate_validation.fqdn]
 }
 
-# resource "aws_api_gateway_domain_name" "domain_name" {
-#   domain_name              = "phplambda-view.jaythedeveloper.tech"
-#   regional_certificate_arn = aws_acm_certificate_validation.certificate_validation.certificate_arn
-
-#   endpoint_configuration {
-#     types = [
-#       "REGIONAL",
-#     ]
-#   }
-# }
-
 resource "aws_apigatewayv2_domain_name" "domain_name" {
   domain_name = "phplambda-view.jaythedeveloper.tech"
   domain_name_configuration {
@@ -48,13 +37,6 @@ resource "aws_apigatewayv2_api_mapping" "path_mapping" {
   domain_name = aws_apigatewayv2_domain_name.domain_name.id
   stage       = aws_apigatewayv2_stage.lambda_api_stage.id
 }
-
-# resource "aws_api_gateway_base_path_mapping" "path_mapping" {
-#   api_id      = aws_api_gateway_rest_api.lambda_api.id
-#   stage_name  = aws_api_gateway_stage.lambda_api_stage.stage_name
-#   domain_name = aws_api_gateway_domain_name.domain_name.domain_name
-# }
-
 
 resource "aws_route53_record" "sub_domain" {
   name    = "phplambda-view.jaythedeveloper.tech"
