@@ -8,5 +8,11 @@
         "allow-plugins": {
             "symfony/runtime": true
         }
+    },
+    "autoload": {
+        "psr-4": {},
+        "files": [
+            "./router.php"
+        ]
     }
 }
