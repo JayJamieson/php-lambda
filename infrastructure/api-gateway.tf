@@ -1,60 +1,108 @@
-resource "aws_api_gateway_rest_api" "lambda_api" {
-  name = "lambda-api"
-  endpoint_configuration {
-    types = ["REGIONAL"]
-  }
+resource "aws_apigatewayv2_api" "lambda_http" {
+  name                         = "lambda_http"
+  protocol_type                = "HTTP"
   disable_execute_api_endpoint = true
 }
 
-resource "aws_api_gateway_resource" "lambda_api_resource" {
-  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
-  parent_id   = aws_api_gateway_rest_api.lambda_api.root_resource_id
-  path_part   = "{proxy+}"
-}
+# resource "aws_api_gateway_rest_api" "lambda_api" {
+#   name = "lambda-api"
+#   endpoint_configuration {
+#     types = ["REGIONAL"]
+#   }
+#   disable_execute_api_endpoint = true
+# }
 
-resource "aws_api_gateway_method" "method" {
-  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
-  resource_id   = aws_api_gateway_resource.lambda_api_resource.id
-  http_method   = "ANY"
-  authorization = "NONE"
-  #   api_key_required = true
+resource "aws_apigatewayv2_route" "default" {
+  api_id    = aws_apigatewayv2_api.lambda_http.id
+  route_key = "$default"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda_api_integration.id}"
 }
+# resource "aws_api_gateway_resource" "lambda_api_resource" {
+#   rest_api_id = aws_api_gateway_rest_api.lambda_api.id
+#   parent_id   = aws_api_gateway_rest_api.lambda_api.root_resource_id
+#   path_part   = "{proxy+}"
+# }
 
-resource "aws_api_gateway_deployment" "lambda_api_deployment" {
-  rest_api_id = aws_api_gateway_rest_api.lambda_api.id
+# resource "aws_api_gateway_method" "method" {
+#   rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
+#   resource_id   = aws_api_gateway_resource.lambda_api_resource.id
+#   http_method   = "ANY"
+#   authorization = "NONE"
+#   #   api_key_required = true
+# }
+
+resource "aws_apigatewayv2_deployment" "lambda_api_deployment" {
+  api_id      = aws_apigatewayv2_route.default.api_id
+  description = "Production PHP lambda deployment"
+
   triggers = {
     redeployment = sha1(jsonencode([
-      aws_api_gateway_resource.lambda_api_resource.id,
-      aws_api_gateway_method.method.id,
-      aws_api_gateway_integration.lambda_integration.id
+      aws_apigatewayv2_integration.lambda_api_integration,
+      aws_apigatewayv2_route.default
     ]))
   }
+  depends_on = [
+    aws_apigatewayv2_integration.lambda_api_integration,
+    aws_apigatewayv2_route.default
+  ]
   lifecycle {
     create_before_destroy = true
   }
 }
 
-resource "aws_api_gateway_stage" "lambda_api_stage" {
-  deployment_id = aws_api_gateway_deployment.lambda_api_deployment.id
-  rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
-  stage_name    = "production"
+# resource "aws_api_gateway_deployment" "lambda_api_deployment" {
+#   rest_api_id = aws_api_gateway_rest_api.lambda_api.id
+#   triggers = {
+#     redeployment = sha1(jsonencode([
+#       aws_api_gateway_resource.lambda_api_resource.id,
+#       aws_api_gateway_method.method.id,
+#       aws_api_gateway_integration.lambda_integration.id
+#     ]))
+#   }
+#   lifecycle {
+#     create_before_destroy = true
+#   }
+# }
+
+
+resource "aws_apigatewayv2_stage" "lambda_api_stage" {
+  api_id = aws_apigatewayv2_api.lambda_http.id
+  name   = "production"
 }
 
-resource "aws_api_gateway_integration" "lambda_integration" {
-  rest_api_id             = aws_api_gateway_rest_api.lambda_api.id
-  resource_id             = aws_api_gateway_resource.lambda_api_resource.id
-  http_method             = aws_api_gateway_method.method.http_method
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.php_lambda.invoke_arn
+# resource "aws_api_gateway_stage" "lambda_api_stage" {
+#   deployment_id = aws_api_gateway_deployment.lambda_api_deployment.id
+#   rest_api_id   = aws_api_gateway_rest_api.lambda_api.id
+#   stage_name    = "production"
+# }
+
+resource "aws_apigatewayv2_integration" "lambda_api_integration" {
+  api_id           = aws_apigatewayv2_api.lambda_http.id
+  integration_type = "AWS_PROXY"
+
+  connection_type = "INTERNET"
+
+  description          = "PHP Lambda"
+  integration_method   = "POST"
+  integration_uri      = aws_lambda_function.php_lambda.invoke_arn
+  passthrough_behavior = "WHEN_NO_MATCH"
 }
+
+# resource "aws_api_gateway_integration" "lambda_integration" {
+#   rest_api_id             = aws_api_gateway_rest_api.lambda_api.id
+#   resource_id             = aws_api_gateway_resource.lambda_api_resource.id
+#   http_method             = aws_api_gateway_method.method.http_method
+#   integration_http_method = "POST"
+#   type                    = "AWS_PROXY"
+#   uri                     = aws_lambda_function.php_lambda.invoke_arn
+# }
 
 resource "aws_lambda_permission" "api_gateway_lambda" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.php_lambda.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "arn:aws:execute-api:ap-southeast-2:834849242330:${aws_api_gateway_rest_api.lambda_api.id}/*"
+  source_arn    = "arn:aws:execute-api:ap-southeast-2:834849242330:${aws_apigatewayv2_api.lambda_http.id}/*/$default"
 }
 
 # resource "aws_api_gateway_usage_plan" "lambda_api_usage" {
@@ -90,11 +138,11 @@ resource "aws_lambda_permission" "api_gateway_lambda" {
 #   usage_plan_id = aws_api_gateway_usage_plan.lambda_api_usage.id
 # }
 
-output "api_name" {
+output "test" {
   description = "ID of the EC2 instance"
-  value       = aws_api_gateway_rest_api.lambda_api.name
+  value       = aws_lambda_permission.api_gateway_lambda.source_arn
 }
 
-output "lambda_api_resource_url" {
-  value = "${aws_api_gateway_deployment.lambda_api_deployment.invoke_url}${aws_api_gateway_stage.lambda_api_stage.stage_name}${aws_api_gateway_resource.lambda_api_resource.path}"
-}
+# output "lambda_api_resource_url" {
+#   value = "${aws_api_gateway_deployment.lambda_api_deployment.invoke_url}${aws_api_gateway_stage.lambda_api_stage.stage_name}${aws_api_gateway_resource.lambda_api_resource.path}"
+# }
