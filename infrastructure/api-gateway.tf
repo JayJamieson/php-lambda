@@ -41,6 +41,7 @@ resource "aws_apigatewayv2_deployment" "lambda_api_deployment" {
       aws_apigatewayv2_route.default
     ]))
   }
+
   depends_on = [
     aws_apigatewayv2_integration.lambda_api_integration,
     aws_apigatewayv2_route.default
@@ -66,8 +67,9 @@ resource "aws_apigatewayv2_deployment" "lambda_api_deployment" {
 
 
 resource "aws_apigatewayv2_stage" "lambda_api_stage" {
-  api_id = aws_apigatewayv2_api.lambda_http.id
-  name   = "production"
+  api_id      = aws_apigatewayv2_api.lambda_http.id
+  name        = "production"
+  auto_deploy = true
 }
 
 # resource "aws_api_gateway_stage" "lambda_api_stage" {
@@ -77,10 +79,10 @@ resource "aws_apigatewayv2_stage" "lambda_api_stage" {
 # }
 
 resource "aws_apigatewayv2_integration" "lambda_api_integration" {
-  api_id           = aws_apigatewayv2_api.lambda_http.id
-  integration_type = "AWS_PROXY"
-
-  connection_type = "INTERNET"
+  api_id                 = aws_apigatewayv2_api.lambda_http.id
+  integration_type       = "AWS_PROXY"
+  payload_format_version = "2.0"
+  connection_type        = "INTERNET"
 
   description          = "PHP Lambda"
   integration_method   = "POST"
