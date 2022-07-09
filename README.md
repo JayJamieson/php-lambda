@@ -2,6 +2,12 @@
 
 Run php on AWS lambda with terraform for IaC
 
+## Branches
+
+This repo is setup to with separate branches for different use cases of running php on lambda.
+
+- `php-view` shows a *basic* setup for rendering php views and a router for dispatching to the respective view handler
+
 ## Requirements
 
 - terraform cli
