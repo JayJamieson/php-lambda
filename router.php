@@ -44,8 +44,6 @@ function any($route, $path_to_include)
 
 function route($route, $path_to_include)
 {
-
-
     /**
      * Check document_root for local development or if running in lambda environment check lambda_task_root.
      * Lambda runtime doesnt set document_root.
