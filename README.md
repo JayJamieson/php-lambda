@@ -6,7 +6,9 @@ Run php on AWS lambda with terraform for IaC
 
 This repo is setup to with separate branches for different use cases of running php on lambda.
 
+- `main` shows a basic event handler lambda triggered by new files put into s3
 - `php-view` shows a *basic* setup for rendering php views and a router for dispatching to the respective view handler
+- `php-api` shows a symfony api project with api gateway `{proxy+}` route handling requests and symfony handling routing
 
 ## Requirements
 
