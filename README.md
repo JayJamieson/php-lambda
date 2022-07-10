@@ -28,3 +28,7 @@ This repo is setup to with separate branches for different use cases of running 
 - Deploy infrastructure with `cd ./infrastructure && terraform apply --auto-approve`
 
 Once completed successfuly you can now deploy new changes with `./deploy.sh` from the root project directory.
+
+export APP_ENV=prod
+composer install --prefer-dist --optimize-autoloader --no-dev
+php bin/console cache:warmup --env=prod

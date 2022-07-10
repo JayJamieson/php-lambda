@@ -19,26 +19,22 @@ resource "aws_lambda_function" "php_lambda" {
   function_name = "php_lambda"
 
   role             = aws_iam_role.lambda_iam_role.arn
-  handler          = "index.php"
+  handler          = "public/index.php"
   architectures    = ["x86_64"]
   filename         = "function.zip"
   source_code_hash = filebase64sha256("function.zip")
   runtime          = "provided.al2"
   timeout          = 900
   memory_size      = 512
-  layers           = ["arn:aws:lambda:ap-southeast-2:209497400698:layer:php-74:48"]
+  layers           = ["arn:aws:lambda:ap-southeast-2:209497400698:layer:php-74-fpm:48"]
   depends_on = [
     aws_iam_role_policy_attachment.lambda_policy_attachment
   ]
-}
 
-resource "aws_s3_bucket_notification" "bucket_notification" {
-  bucket = aws_s3_bucket.bucket.id
-
-  lambda_function {
-    lambda_function_arn = aws_lambda_function.php_lambda.arn
-    events              = ["s3:ObjectCreated:*"]
-    filter_prefix       = "emails/"
+  environment {
+    variables = {
+      APP_ENV = "prod"
+    }
   }
 }
 
