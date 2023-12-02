@@ -1,8 +1,8 @@
 {
     "require": {
-        "bref/bref": "1.6.0",
-        "bref/symfony-bridge": "^0.2.0",
-        "bref/logger": "^1.0"
+        "bref/bref": "^2.1.9",
+        "bref/symfony-bridge": "^1.0.0",
+        "bref/logger": "^1.0.2"
     },
     "config": {
         "allow-plugins": {

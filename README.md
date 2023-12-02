@@ -13,7 +13,7 @@ This repo is setup to with separate branches for different use cases of running 
 ## Requirements
 
 - terraform cli
-- php >=7.4
+- php >=8.0
 - composer
 
 ## Setup
@@ -25,8 +25,7 @@ This repo is setup to with separate branches for different use cases of running 
 ### Terraform and Infrastructure
 
 - Initialize terraform with `cd ./infrastructure && terraform init`
-- Package handler and vendor dependencies into zip file for initial terraform apply with `zip -r function.zip ./ -x "./infrastructure/*"`
-- Copy to infrastructure directory `cp function.zip ./infrastructure/`
-- Deploy infrastructure with `cd ./infrastructure && terraform apply --auto-approve`
 
-Once completed successfuly you can now deploy new changes with `./deploy.sh` from the root project directory.
+## Links
+
+- [Bref runtime layers](https://runtimes.bref.sh/)
