@@ -54,5 +54,5 @@ resource "aws_lambda_permission" "api_gateway_lambda" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.php_lambda.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "arn:aws:execute-api:ap-southeast-2:834849242330:${aws_apigatewayv2_api.lambda_http.id}/*/$default"
+  source_arn    = "arn:aws:execute-api:ap-southeast-2:${data.aws_caller_identity.current.account_id}:${aws_apigatewayv2_api.lambda_http.id}/*/$default"
 }

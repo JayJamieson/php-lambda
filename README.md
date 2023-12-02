@@ -5,7 +5,7 @@ Run php on AWS lambda with terraform for IaC
 ## Requirements
 
 - terraform cli
-- php >=7.4
+- php >=8.0
 - composer
 
 ## Setup
@@ -25,6 +25,7 @@ file includes. This is because the lambda runtime doesn't configure `$_SERVER['D
 
 ### Terraform and Infrastructure
 
+- Create a `<environment>.tfvars` file and fill out require variables
 - Initialize terraform with `cd ./infrastructure && terraform init`
 - Package handler and vendor dependencies into zip file for initial terraform apply with `zip -r function.zip ./ -x "./infrastructure/*"`
 - Copy to infrastructure directory `cp function.zip ./infrastructure/`
