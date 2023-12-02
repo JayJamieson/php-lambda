@@ -2,10 +2,12 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.16"
+      version = "~>5.29.0"
     }
   }
 }
+
+data "aws_route53_zone" "jaythedeveloper_zone" {}
 
 provider "aws" {
   region = "ap-southeast-2"
@@ -26,7 +28,7 @@ resource "aws_lambda_function" "php_lambda" {
   runtime          = "provided.al2"
   timeout          = 900
   memory_size      = 512
-  layers           = ["arn:aws:lambda:ap-southeast-2:209497400698:layer:php-74-fpm:48"]
+  layers           = ["arn:aws:lambda:ap-southeast-2:534081306603:layer:php-80-fpm:62"]
   depends_on = [
     aws_iam_role_policy_attachment.lambda_policy_attachment
   ]
@@ -84,7 +86,7 @@ resource "aws_iam_policy" "lambda_execution_policy" {
         Action = ["logs:CreateLogGroup"]
         Effect = "Allow"
         Resource = [
-          "arn:aws:logs:ap-southeast-2:834849242330:*"
+          "arn:aws:logs:ap-southeast-2:${data.aws_caller_identity.current.account_id}:*"
         ]
       },
       {
@@ -93,7 +95,7 @@ resource "aws_iam_policy" "lambda_execution_policy" {
           "logs:CreateLogStream",
           "logs:PutLogEvents"
         ],
-        Resource = "arn:aws:logs:ap-southeast-2:834849242330:log-group:*"
+        Resource = "arn:aws:logs:ap-southeast-2:${data.aws_caller_identity.current.account_id}:log-group:*"
       }
     ]
   })
