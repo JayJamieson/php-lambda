@@ -1,16 +1,16 @@
-data "aws_route53_zone" "jaythedeveloper_zone" {
-  name = "jaythedeveloper.tech."
+data "aws_route53_zone" "root_zone" {
+  name = var.aws_route53_zone
 }
 
 resource "aws_acm_certificate" "certificate" {
-  domain_name       = "phplambda-api.jaythedeveloper.tech"
+  domain_name       = var.aws_acm_certificate_domain
   validation_method = "DNS"
 }
 
 resource "aws_route53_record" "certificate_validation" {
   name    = tolist(aws_acm_certificate.certificate.domain_validation_options)[0].resource_record_name
   type    = tolist(aws_acm_certificate.certificate.domain_validation_options)[0].resource_record_type
-  zone_id = data.aws_route53_zone.jaythedeveloper_zone.zone_id
+  zone_id = data.aws_route53_zone.root_zone.zone_id
   records = [tolist(aws_acm_certificate.certificate.domain_validation_options)[0].resource_record_value]
   ttl     = 60
 }
@@ -21,7 +21,7 @@ resource "aws_acm_certificate_validation" "certificate_validation" {
 }
 
 resource "aws_api_gateway_domain_name" "domain_name" {
-  domain_name              = "phplambda-api.jaythedeveloper.tech"
+  domain_name              = var.aws_api_gateway_domain_name
   regional_certificate_arn = aws_acm_certificate_validation.certificate_validation.certificate_arn
 
   endpoint_configuration {
@@ -38,9 +38,9 @@ resource "aws_api_gateway_base_path_mapping" "path_mapping" {
 }
 
 resource "aws_route53_record" "sub_domain" {
-  name    = "phplambda-api.jaythedeveloper.tech"
+  name    = var.aws_api_gateway_domain_name
   type    = "A"
-  zone_id = data.aws_route53_zone.jaythedeveloper_zone.zone_id
+  zone_id = data.aws_route53_zone.root_zone.zone_id
 
   alias {
     name                   = aws_api_gateway_domain_name.domain_name.regional_domain_name

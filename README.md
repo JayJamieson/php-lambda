@@ -5,7 +5,7 @@ Run php on AWS lambda with terraform for IaC
 ## Requirements
 
 - terraform cli
-- php >=7.4
+- php >=8.0
 - composer
 
 ## Setup
@@ -18,6 +18,7 @@ This uses api gateway and symfony framework to demonstrate setting up an API run
 
 ### Terraform and Infrastructure
 
+- Create `<environment.tfvars` variable file and fill out required variables
 - Initialize terraform with `cd ./infrastructure && terraform init`
 - Set environment to production using `export APP_ENV=prod`
 - clean up dependencies from developement `composer install --prefer-dist --optimize-autoloader --no-dev`
